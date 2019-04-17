@@ -3,15 +3,18 @@
 #include <time.h>
 #include <math.h>
 
-#define PI 3.1416
-#define WINDOW_WIDTH 500
-#define WINDOW_HEIGHT 500
+const float PI = 3.1415f;
+const int WINDOW_WIDTH = 500;
+const int WINDOW_HEIGHT = 500;
 
 void renderingThread(sf::RenderWindow* Window);
 
 int main()
 {
-	sf::RenderWindow Window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Elastic Collision Simulation", sf::Style::Close);
+	sf::ContextSettings Settings;
+	Settings.antialiasingLevel = 4;
+
+	sf::RenderWindow Window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Elastic Collision Simulation", sf::Style::Close, Settings);
 
 	Window.setActive(false);
 	sf::Thread thread(&renderingThread, &Window);
@@ -40,33 +43,37 @@ void renderingThread(sf::RenderWindow* Window)
 	const float TopBorder = 0.f;
 	const float LeftBorder = 0.f;
 	const float RightBorder = float(WINDOW_WIDTH);
-	const float Radius = 10.f;
+	const float Radius = 15.f;
+	const float Diameter = 2.f * Radius;
 	const float AbsoluteVelocity = .1f;
 	const int BallCount = 15;
 	const int BallMass = 1;
+
+	float Angle = 0.f;
+	float AbsoluteDistance = 0.f;
+	float OverlappingDistance = 0.f;
 
 	sf::Vector2f Position[BallCount];
 	sf::Vector2f Velocity[BallCount];
 
 	sf::Vector2f DeltaPosition;
+	sf::Vector2f UnitVectorDeltaPosition;
 	sf::Vector2f DeltaVelocity;
-
-	float Angle = 0.f;
 
 	sf::Time ActualTimeDelta;
 	sf::Int32 IntegerTimeDelta;
 
 	sf::CircleShape Ball[BallCount];
 
-	srand(time(NULL));
+	srand(static_cast<unsigned int>(time(NULL)));
 
 	for (size_t i = 0; i < BallCount; i++)
 	{
-		Position[i].x = float(rand() % 400 + 50);
-		Position[i].y = float(rand() % 400 + 50);
+		Position[i].x = static_cast<float>(rand() % 400 + 50);
+		Position[i].y = static_cast<float>(rand() % 400 + 50);
 
-		Angle = float(rand() % 360);
-		Angle = Angle * PI / 180.0;
+		Angle = static_cast<float>(rand() % 360);
+		Angle = (Angle * PI) / 180.f;
 
 		Velocity[i].x = AbsoluteVelocity * cosf(Angle);
 		Velocity[i].y = AbsoluteVelocity * sinf(Angle);
@@ -87,59 +94,58 @@ void renderingThread(sf::RenderWindow* Window)
 
 		for (size_t i = 0; i < BallCount; i++)
 		{
-			Position[i] = Ball[i].getPosition();
-
 			for (size_t j = 0; j < BallCount; j++)
 			{
 				if (j != i)
 				{
-					if ((pow((Position[i].x - Position[j].x), 2) + pow((Position[i].y - Position[j].y), 2)) <= pow((2 * Radius), 2))
+					DeltaPosition = Position[j] - Position[i];
+					DeltaVelocity = Velocity[j] - Velocity[i];
+					AbsoluteDistance = sqrt((DeltaPosition.x * DeltaPosition.x) + (DeltaPosition.y * DeltaPosition.y));
+					UnitVectorDeltaPosition.x = DeltaPosition.x / AbsoluteDistance;
+					UnitVectorDeltaPosition.y = DeltaPosition.y / AbsoluteDistance;
+
+					if (AbsoluteDistance < Diameter)
 					{
-						if (Position[i].x <= Position[j].x)
-						{
-							Ball[j].setPosition((Position[j].x += 1.f), Position[j].y);
-						}
-						if (Position[i].y <= Position[j].y)
-						{
-							Ball[j].setPosition(Position[j].x, (Position[j].y += 1.f));
-						}
-						if (Position[i].x >= Position[j].x)
-						{
-							Ball[j].setPosition((Position[j].x -= 1.f), Position[j].y);
-						}
-						if (Position[i].y >= Position[j].y)
-						{
-							Ball[j].setPosition(Position[j].x, (Position[j].y -= 1.f));
-						}
-						DeltaPosition = Position[j] - Position[i];
-						DeltaVelocity = Velocity[j] - Velocity[i];
-						Velocity[j] -= (2*BallMass/(BallMass+BallMass)) * ( ((DeltaVelocity.x*DeltaPosition.x)+(DeltaVelocity.y*DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2)) ) * DeltaPosition;
+						Velocity[j] -= (2 * BallMass / (BallMass + BallMass)) * (((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
+						DeltaPosition = (-DeltaPosition);
+						DeltaVelocity = (-DeltaVelocity);
+						Velocity[i] -= (2 * BallMass / (BallMass + BallMass)) * (((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
+
+						Position[j].x += (Velocity[j].x * IntegerTimeDelta);
+						Position[j].x += (Velocity[j].y * IntegerTimeDelta);
+						Position[i].x += (Velocity[i].x * IntegerTimeDelta);
+						Position[i].x += (Velocity[i].y * IntegerTimeDelta);
+
+						OverlappingDistance = Diameter - AbsoluteDistance;
+
+						Ball[j].setPosition((Position[j].x += (OverlappingDistance * UnitVectorDeltaPosition.x)), (Position[j].y += OverlappingDistance * UnitVectorDeltaPosition.y));
+						Ball[i].setPosition((Position[i].x -= (OverlappingDistance * UnitVectorDeltaPosition.x)), (Position[i].y -= OverlappingDistance * UnitVectorDeltaPosition.y));
 					}
 				}
 			}
 
-			if (Position[i].x <= LeftBorder)
+			if (Position[i].x < LeftBorder)
 			{
-				Ball[i].setPosition((Position[i].x = (LeftBorder + 1.f)), Position[i].y);
+				Ball[i].setPosition((Position[i].x = LeftBorder), Position[i].y);
 				Velocity[i].x *= -1.f;
 			}
-			if ((Position[i].x + (2.f * Radius)) >= RightBorder)
+			if ((Position[i].x + Diameter) > RightBorder)
 			{
-				Ball[i].setPosition((Position[i].x = (RightBorder - ((2.f * Radius) + 1.f))), Position[i].y);
+				Ball[i].setPosition((Position[i].x = (RightBorder - Diameter)), Position[i].y);
 				Velocity[i].x *= -1.f;
 			}
-			if (Position[i].y <= TopBorder)
+			if (Position[i].y < TopBorder)
 			{
-				Ball[i].setPosition(Position[i].x, (Position[i].y = (TopBorder + 1.f)));
+				Ball[i].setPosition(Position[i].x, (Position[i].y = TopBorder));
 				Velocity[i].y *= -1.f;
 			}
-			if ((Position[i].y + (2.f * Radius)) >= BottomBorder)
+			if ((Position[i].y + Diameter) > BottomBorder)
 			{
-				Ball[i].setPosition(Position[i].x, (Position[i].y = (BottomBorder - ((2.f * Radius) + 1.f))));
+				Ball[i].setPosition(Position[i].x, (Position[i].y = (BottomBorder - Diameter)));
 				Velocity[i].y *= -1.f;
 			}
 
-			Ball[i].move(Velocity[i].x * IntegerTimeDelta, Velocity[i].y * IntegerTimeDelta);
+			Ball[i].setPosition((Position[i].x += (Velocity[i].x * IntegerTimeDelta)), (Position[i].y += (Velocity[i].y * IntegerTimeDelta)));
 			Window->draw(Ball[i]);
 		}
 
