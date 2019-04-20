@@ -1,3 +1,12 @@
+/*
+Title: Elastic Collision Simulation
+Description: This program simulates elastic collisions of balls in an boxed area.
+Author: Daniel Duller
+Version: 0.1.0
+Creation date: 14.04.2019
+Last change: 20.04.2019
+*/
+
 #include <SFML/Graphics.hpp>
 #include <stdlib.h>
 #include <time.h>
