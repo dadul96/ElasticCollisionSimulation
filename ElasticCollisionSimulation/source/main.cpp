@@ -11,6 +11,7 @@ Last change: 20.04.2019
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include "file_handling.h"
 
 const float PI = 3.1415f;
 const int WINDOW_WIDTH = 500;
