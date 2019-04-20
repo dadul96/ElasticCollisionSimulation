@@ -1,6 +1,6 @@
 /*
 Title: Elastic Collision Simulation
-Description: This program simulates elastic collisions of balls in an boxed area.
+Description: This program simulates elastic collisions of balls in a boxed area.
 Author: Daniel Duller
 Version: 0.1.0
 Creation date: 14.04.2019
