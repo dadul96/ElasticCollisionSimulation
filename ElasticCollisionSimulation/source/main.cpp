@@ -4,7 +4,7 @@ Description: This program simulates elastic collisions of balls in a boxed area.
 Author: Daniel Duller
 Version: 0.1.0
 Creation date: 14.04.2019
-Last change: 20.04.2019
+Last change: 21.04.2019
 */
 
 #include <SFML/Graphics.hpp>
@@ -94,7 +94,7 @@ void renderingThread(sf::RenderWindow* Window)
 	}
 
 	sf::Clock Clock;
-
+	
 	while (Window->isOpen())
 	{
 		Window->clear(sf::Color::Black);
