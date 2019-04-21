@@ -104,33 +104,30 @@ void renderingThread(sf::RenderWindow* Window)
 
 		for (size_t i = 0; i < BallCount; i++)
 		{
-			for (size_t j = 0; j < BallCount; j++)
+			for (size_t j = i+1; j < BallCount; j++)
 			{
-				if (j != i)
+				DeltaPosition = Position[j] - Position[i];
+				DeltaVelocity = Velocity[j] - Velocity[i];
+				AbsoluteDistance = sqrt((DeltaPosition.x * DeltaPosition.x) + (DeltaPosition.y * DeltaPosition.y));
+				UnitVectorDeltaPosition.x = DeltaPosition.x / AbsoluteDistance;
+				UnitVectorDeltaPosition.y = DeltaPosition.y / AbsoluteDistance;
+
+				if (AbsoluteDistance < Diameter)
 				{
-					DeltaPosition = Position[j] - Position[i];
-					DeltaVelocity = Velocity[j] - Velocity[i];
-					AbsoluteDistance = sqrt((DeltaPosition.x * DeltaPosition.x) + (DeltaPosition.y * DeltaPosition.y));
-					UnitVectorDeltaPosition.x = DeltaPosition.x / AbsoluteDistance;
-					UnitVectorDeltaPosition.y = DeltaPosition.y / AbsoluteDistance;
+					Velocity[j] -= (2 * BallMass / (BallMass + BallMass)) * (((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
+					DeltaPosition = (-DeltaPosition);
+					DeltaVelocity = (-DeltaVelocity);
+					Velocity[i] -= (2 * BallMass / (BallMass + BallMass)) * (((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
 
-					if (AbsoluteDistance < Diameter)
-					{
-						Velocity[j] -= (2 * BallMass / (BallMass + BallMass)) * (((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
-						DeltaPosition = (-DeltaPosition);
-						DeltaVelocity = (-DeltaVelocity);
-						Velocity[i] -= (2 * BallMass / (BallMass + BallMass)) * (((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
+					Position[j].x += (Velocity[j].x * IntegerTimeDelta);
+					Position[j].x += (Velocity[j].y * IntegerTimeDelta);
+					Position[i].x += (Velocity[i].x * IntegerTimeDelta);
+					Position[i].x += (Velocity[i].y * IntegerTimeDelta);
 
-						Position[j].x += (Velocity[j].x * IntegerTimeDelta);
-						Position[j].x += (Velocity[j].y * IntegerTimeDelta);
-						Position[i].x += (Velocity[i].x * IntegerTimeDelta);
-						Position[i].x += (Velocity[i].y * IntegerTimeDelta);
+					OverlappingDistance = Diameter - AbsoluteDistance;
 
-						OverlappingDistance = Diameter - AbsoluteDistance;
-
-						Ball[j].setPosition((Position[j].x += (OverlappingDistance * UnitVectorDeltaPosition.x)), (Position[j].y += OverlappingDistance * UnitVectorDeltaPosition.y));
-						Ball[i].setPosition((Position[i].x -= (OverlappingDistance * UnitVectorDeltaPosition.x)), (Position[i].y -= OverlappingDistance * UnitVectorDeltaPosition.y));
-					}
+					Ball[j].setPosition((Position[j].x += (OverlappingDistance * UnitVectorDeltaPosition.x)), (Position[j].y += OverlappingDistance * UnitVectorDeltaPosition.y));
+					Ball[i].setPosition((Position[i].x -= (OverlappingDistance * UnitVectorDeltaPosition.x)), (Position[i].y -= OverlappingDistance * UnitVectorDeltaPosition.y));
 				}
 			}
 
