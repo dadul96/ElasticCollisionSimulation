@@ -2,16 +2,16 @@
 Title: Elastic Collision Simulation
 Description: This program simulates elastic collisions of balls in a boxed area.
 Author: Daniel Duller
-Version: 0.1.0
+Version: 0.2.0
 Creation date: 14.04.2019
-Last change: 21.04.2019
+Last change: 23.04.2019
 */
 
 #include <SFML/Graphics.hpp>
-#include <stdlib.h>
 #include <time.h>
+#include <stdlib.h>
 #include <math.h>
-#include "file_handling.h"
+#include "file_handling.hpp"
 
 const float PI = 3.1415f;
 const int WINDOW_WIDTH = 500;
@@ -19,8 +19,7 @@ const int WINDOW_HEIGHT = 500;
 
 void renderingThread(sf::RenderWindow* Window);
 
-int main()
-{
+int main() {
 	sf::ContextSettings Settings;
 	Settings.antialiasingLevel = 4;
 
@@ -30,12 +29,12 @@ int main()
 	sf::Thread thread(&renderingThread, &Window);
 	thread.launch();
 
-	while (Window.isOpen())
+	while(Window.isOpen())
 	{
 		sf::Event event;
-		while (Window.pollEvent(event))
+		while(Window.pollEvent(event))
 		{
-			if (event.type == sf::Event::Closed)
+			if(event.type == sf::Event::Closed)
 			{
 				Window.close();
 			}
@@ -44,8 +43,7 @@ int main()
 	return 0;
 }
 
-void renderingThread(sf::RenderWindow* Window)
-{
+void renderingThread(sf::RenderWindow* Window) {
 	Window->setActive(true);
 	Window->setVerticalSyncEnabled(true);
 
@@ -77,7 +75,7 @@ void renderingThread(sf::RenderWindow* Window)
 
 	srand(static_cast<unsigned int>(time(NULL)));
 
-	for (size_t i = 0; i < BallCount; i++)
+	for(size_t i = 0; i < BallCount; i++)
 	{
 		Position[i].x = static_cast<float>(rand() % 400 + 50);
 		Position[i].y = static_cast<float>(rand() % 400 + 50);
@@ -94,17 +92,17 @@ void renderingThread(sf::RenderWindow* Window)
 	}
 
 	sf::Clock Clock;
-	
-	while (Window->isOpen())
+
+	while(Window->isOpen())
 	{
 		Window->clear(sf::Color::Black);
 
 		ActualTimeDelta = Clock.restart();
 		IntegerTimeDelta = ActualTimeDelta.asMilliseconds();
 
-		for (size_t i = 0; i < BallCount; i++)
+		for(size_t i = 0; i < BallCount; i++)
 		{
-			for (size_t j = i+1; j < BallCount; j++)
+			for(size_t j = i + 1; j < BallCount; j++)
 			{
 				DeltaPosition = Position[j] - Position[i];
 				DeltaVelocity = Velocity[j] - Velocity[i];
@@ -112,7 +110,7 @@ void renderingThread(sf::RenderWindow* Window)
 				UnitVectorDeltaPosition.x = DeltaPosition.x / AbsoluteDistance;
 				UnitVectorDeltaPosition.y = DeltaPosition.y / AbsoluteDistance;
 
-				if (AbsoluteDistance < Diameter)
+				if(AbsoluteDistance < Diameter)
 				{
 					Velocity[j] -= (2 * BallMass / (BallMass + BallMass)) * (((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
 					DeltaPosition = (-DeltaPosition);
@@ -131,22 +129,22 @@ void renderingThread(sf::RenderWindow* Window)
 				}
 			}
 
-			if (Position[i].x < LeftBorder)
+			if(Position[i].x < LeftBorder)
 			{
 				Ball[i].setPosition((Position[i].x = LeftBorder), Position[i].y);
 				Velocity[i].x *= -1.f;
 			}
-			if ((Position[i].x + Diameter) > RightBorder)
+			if((Position[i].x + Diameter) > RightBorder)
 			{
 				Ball[i].setPosition((Position[i].x = (RightBorder - Diameter)), Position[i].y);
 				Velocity[i].x *= -1.f;
 			}
-			if (Position[i].y < TopBorder)
+			if(Position[i].y < TopBorder)
 			{
 				Ball[i].setPosition(Position[i].x, (Position[i].y = TopBorder));
 				Velocity[i].y *= -1.f;
 			}
-			if ((Position[i].y + Diameter) > BottomBorder)
+			if((Position[i].y + Diameter) > BottomBorder)
 			{
 				Ball[i].setPosition(Position[i].x, (Position[i].y = (BottomBorder - Diameter)));
 				Velocity[i].y *= -1.f;

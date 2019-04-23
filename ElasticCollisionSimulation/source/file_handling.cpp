@@ -1,9 +1,10 @@
-#include "file_handling.h"
+#include "file_handling.hpp"
 
-void readFile() {
-
+Configuration readFile() {
+	Configuration ReturnConfig = {0};
+	return ReturnConfig;
 }
 
-void writeFile() {
-
+int writeFile() {
+	return 1;
 }
