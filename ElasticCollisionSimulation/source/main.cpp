@@ -11,23 +11,22 @@ Last change: 23.04.2019
 #include <time.h>
 #include <stdlib.h>
 #include <math.h>
+#include <thread>
 #include "file_handling.hpp"
 
-const float PI = 3.1415f;
-const int WINDOW_WIDTH = 500;
-const int WINDOW_HEIGHT = 500;
-
-void renderingThread(sf::RenderWindow* pWindow);
+void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT);
 
 int main() {
+	const int WINDOW_WIDTH = 500;
+	const int WINDOW_HEIGHT = 500;
+
 	sf::ContextSettings Settings;
 	Settings.antialiasingLevel = 4;
 
 	sf::RenderWindow Window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Elastic Collision Simulation", sf::Style::Close, Settings);
-
 	Window.setActive(false);
-	sf::Thread thread(&renderingThread, &Window);
-	thread.launch();
+
+	std::thread (rendering, &Window, WINDOW_WIDTH, WINDOW_HEIGHT).detach();
 
 	while(Window.isOpen())
 	{
@@ -43,14 +42,15 @@ int main() {
 	return 0;
 }
 
-void renderingThread(sf::RenderWindow* pWindow) {
+void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT) {
 	pWindow->setActive(true);
 	pWindow->setVerticalSyncEnabled(true);
 
-	const float BottomBorder = float(WINDOW_HEIGHT);
+	const float PI = 3.1415f;
+	const float BottomBorder = float(pWINDOW_HEIGHT);
 	const float TopBorder = 0.f;
 	const float LeftBorder = 0.f;
-	const float RightBorder = float(WINDOW_WIDTH);
+	const float RightBorder = float(pWINDOW_WIDTH);
 	const float Radius = 15.f;
 	const float Diameter = 2.f * Radius;
 	const float AbsoluteVelocity = .1f;
