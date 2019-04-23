@@ -17,4 +17,4 @@ struct Configuration {
 };
 
 Configuration readFile();
-int writeFile();
+int writeFile(Configuration &Configuration);

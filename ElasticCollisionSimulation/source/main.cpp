@@ -17,7 +17,7 @@ const float PI = 3.1415f;
 const int WINDOW_WIDTH = 500;
 const int WINDOW_HEIGHT = 500;
 
-void renderingThread(sf::RenderWindow* Window);
+void renderingThread(sf::RenderWindow* pWindow);
 
 int main() {
 	sf::ContextSettings Settings;
@@ -43,9 +43,9 @@ int main() {
 	return 0;
 }
 
-void renderingThread(sf::RenderWindow* Window) {
-	Window->setActive(true);
-	Window->setVerticalSyncEnabled(true);
+void renderingThread(sf::RenderWindow* pWindow) {
+	pWindow->setActive(true);
+	pWindow->setVerticalSyncEnabled(true);
 
 	const float BottomBorder = float(WINDOW_HEIGHT);
 	const float TopBorder = 0.f;
@@ -93,9 +93,9 @@ void renderingThread(sf::RenderWindow* Window) {
 
 	sf::Clock Clock;
 
-	while(Window->isOpen())
+	while(pWindow->isOpen())
 	{
-		Window->clear(sf::Color::Black);
+		pWindow->clear(sf::Color::Black);
 
 		ActualTimeDelta = Clock.restart();
 		IntegerTimeDelta = ActualTimeDelta.asMilliseconds();
@@ -151,9 +151,9 @@ void renderingThread(sf::RenderWindow* Window) {
 			}
 
 			Ball[i].setPosition((Position[i].x += (Velocity[i].x * IntegerTimeDelta)), (Position[i].y += (Velocity[i].y * IntegerTimeDelta)));
-			Window->draw(Ball[i]);
+			pWindow->draw(Ball[i]);
 		}
 
-		Window->display();
+		pWindow->display();
 	}
 }
