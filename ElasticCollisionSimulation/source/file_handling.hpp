@@ -1,5 +1,5 @@
 #pragma once
-#include <iostream>
+#include <fstream>
 #include <string>
 
 struct Configuration {
@@ -17,4 +17,4 @@ struct Configuration {
 };
 
 Configuration readFile();
-int writeFile(Configuration &Configuration);
+int writeFile(Configuration& Configuration);

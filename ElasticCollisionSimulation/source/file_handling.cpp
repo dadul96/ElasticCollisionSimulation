@@ -5,6 +5,6 @@ Configuration readFile() {
 	return ReturnConfig;
 }
 
-int writeFile(Configuration &pConfiguration) {
+int writeFile(Configuration& pConfiguration) {
 	return 1;
 }

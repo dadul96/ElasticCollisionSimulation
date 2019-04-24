@@ -26,14 +26,14 @@ int main() {
 	sf::RenderWindow Window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Elastic Collision Simulation", sf::Style::Close, Settings);
 	Window.setActive(false);
 
-	std::thread (rendering, &Window, WINDOW_WIDTH, WINDOW_HEIGHT).detach();
+	std::thread(rendering, &Window, WINDOW_WIDTH, WINDOW_HEIGHT).detach();
 
-	while(Window.isOpen())
+	while (Window.isOpen())
 	{
 		sf::Event event;
-		while(Window.pollEvent(event))
+		while (Window.pollEvent(event))
 		{
-			if(event.type == sf::Event::Closed)
+			if (event.type == sf::Event::Closed)
 			{
 				Window.close();
 			}
@@ -75,7 +75,7 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 
 	srand(static_cast<unsigned int>(time(NULL)));
 
-	for(size_t i = 0; i < BallCount; i++)
+	for (size_t i = 0; i < BallCount; i++)
 	{
 		Position[i].x = static_cast<float>(rand() % 400 + 50);
 		Position[i].y = static_cast<float>(rand() % 400 + 50);
@@ -93,16 +93,16 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 
 	sf::Clock Clock;
 
-	while(pWindow->isOpen())
+	while (pWindow->isOpen())
 	{
 		pWindow->clear(sf::Color::Black);
 
 		ActualTimeDelta = Clock.restart();
 		IntegerTimeDelta = ActualTimeDelta.asMilliseconds();
 
-		for(size_t i = 0; i < BallCount; i++)
+		for (size_t i = 0; i < BallCount; i++)
 		{
-			for(size_t j = i + 1; j < BallCount; j++)
+			for (size_t j = i + 1; j < BallCount; j++)
 			{
 				DeltaPosition = Position[j] - Position[i];
 				DeltaVelocity = Velocity[j] - Velocity[i];
@@ -110,7 +110,7 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 				UnitVectorDeltaPosition.x = DeltaPosition.x / AbsoluteDistance;
 				UnitVectorDeltaPosition.y = DeltaPosition.y / AbsoluteDistance;
 
-				if(AbsoluteDistance < Diameter)
+				if (AbsoluteDistance < Diameter)
 				{
 					Velocity[j] -= (2 * BallMass / (BallMass + BallMass)) * (((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
 					DeltaPosition = (-DeltaPosition);
@@ -129,22 +129,22 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 				}
 			}
 
-			if(Position[i].x < LeftBorder)
+			if (Position[i].x < LeftBorder)
 			{
 				Ball[i].setPosition((Position[i].x = LeftBorder), Position[i].y);
 				Velocity[i].x *= -1.f;
 			}
-			if((Position[i].x + Diameter) > RightBorder)
+			if ((Position[i].x + Diameter) > RightBorder)
 			{
 				Ball[i].setPosition((Position[i].x = (RightBorder - Diameter)), Position[i].y);
 				Velocity[i].x *= -1.f;
 			}
-			if(Position[i].y < TopBorder)
+			if (Position[i].y < TopBorder)
 			{
 				Ball[i].setPosition(Position[i].x, (Position[i].y = TopBorder));
 				Velocity[i].y *= -1.f;
 			}
-			if((Position[i].y + Diameter) > BottomBorder)
+			if ((Position[i].y + Diameter) > BottomBorder)
 			{
 				Ball[i].setPosition(Position[i].x, (Position[i].y = (BottomBorder - Diameter)));
 				Velocity[i].y *= -1.f;
