@@ -26,7 +26,7 @@ int main() {
 	sf::RenderWindow Window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Elastic Collision Simulation", sf::Style::Close, Settings);
 	Window.setActive(false);
 
-	std::thread(rendering, &Window, WINDOW_WIDTH, WINDOW_HEIGHT).detach();
+	std::thread renderingThread(&rendering, &Window, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	while (Window.isOpen())
 	{
@@ -36,6 +36,7 @@ int main() {
 			if (event.type == sf::Event::Closed)
 			{
 				Window.close();
+				renderingThread.join();
 			}
 		}
 	}
