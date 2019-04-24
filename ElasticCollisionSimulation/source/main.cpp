@@ -8,25 +8,25 @@ Last change: 23.04.2019
 */
 
 #include <SFML/Graphics.hpp>
-#include <time.h>
-#include <stdlib.h>
-#include <math.h>
+#include <ctime>
+#include <cstdlib>
+#include <cmath>
 #include <thread>
 #include "file_handling.hpp"
 
 void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT);
 
 int main() {
-	const int WINDOW_WIDTH = 500;
-	const int WINDOW_HEIGHT = 500;
+	constexpr int WindowWidth = 500;
+	constexpr int WindowHeight = 500;
 
 	sf::ContextSettings Settings;
 	Settings.antialiasingLevel = 4;
 
-	sf::RenderWindow Window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Elastic Collision Simulation", sf::Style::Close, Settings);
+	sf::RenderWindow Window(sf::VideoMode(WindowWidth, WindowHeight), "Elastic Collision Simulation", sf::Style::Close, Settings);
 	Window.setActive(false);
 
-	std::thread renderingThread(&rendering, &Window, WINDOW_WIDTH, WINDOW_HEIGHT);
+	std::thread renderingThread(&rendering, &Window, WindowWidth, WindowHeight);
 
 	while (Window.isOpen())
 	{
