@@ -12,11 +12,15 @@ Last change: 26.04.2019
 #include <cstdlib>
 #include <cmath>
 #include <thread>
+#include "config_file_handling.hpp"
 
 
-void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT);
+void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT, const ConfigFileHandler& pConfigHandler);
 
 int main() {
+	ConfigFileHandler ConfigHandler;
+	ConfigHandler.getConfig();
+
 	constexpr int WindowWidth = 500;
 	constexpr int WindowHeight = 500;
 
@@ -26,7 +30,7 @@ int main() {
 	sf::RenderWindow Window(sf::VideoMode(WindowWidth, WindowHeight), "Elastic Collision Simulation", sf::Style::Close, Settings);
 	Window.setActive(false);
 
-	std::thread renderingThread(&rendering, &Window, WindowWidth, WindowHeight);
+	std::thread renderingThread(&rendering, &Window, WindowWidth, WindowHeight, ConfigHandler);
 
 	while (Window.isOpen())
 	{
@@ -43,24 +47,28 @@ int main() {
 	return 0;
 }
 
-void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT) {
+void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT, const ConfigFileHandler& pConfigHandler) {
 	pWindow->setActive(true);
 	pWindow->setVerticalSyncEnabled(true);
 
-	const float PI = 3.1415f;
-	const float BottomBorder = float(pWINDOW_HEIGHT);
-	const float TopBorder = 0.f;
-	const float LeftBorder = 0.f;
-	const float RightBorder = float(pWINDOW_WIDTH);
-	const float Radius = 15.f;
-	const float Diameter = 2.f * Radius;
-	const float AbsoluteVelocity = .1f;
-	const int BallCount = 15;
+	constexpr float PI = 3.1415f;
+	const float BottomBorder = static_cast<float>(pWINDOW_HEIGHT);
+	constexpr float TopBorder = 0.f;
+	constexpr float LeftBorder = 0.f;
+	const float RightBorder = static_cast<float>(pWINDOW_WIDTH);
 	const int BallMass = 1;
 
+	float Radius = pConfigHandler.Configuration.BallRadius;
+	float Diameter = 2.f * Radius;
+	float AbsoluteVelocity = pConfigHandler.Configuration.AbsoluteVelocity;
+	const int BallCount = 15; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#############################################################################################
+	
 	float Angle = 0.f;
 	float AbsoluteDistance = 0.f;
 	float OverlappingDistance = 0.f;
+
+	sf::Color BackgroundColor(pConfigHandler.Configuration.BackgroundColorRGB[0], pConfigHandler.Configuration.BackgroundColorRGB[1], pConfigHandler.Configuration.BackgroundColorRGB[2]);
+	sf::Color BallColor(pConfigHandler.Configuration.BallColorRGB[0], pConfigHandler.Configuration.BallColorRGB[1], pConfigHandler.Configuration.BallColorRGB[2]);
 
 	sf::Vector2f Position[BallCount];
 	sf::Vector2f Velocity[BallCount];
@@ -88,7 +96,7 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 		Velocity[i].y = AbsoluteVelocity * sinf(Angle);
 
 		Ball[i].setRadius(Radius);
-		Ball[i].setFillColor(sf::Color::Green);
+		Ball[i].setFillColor(BallColor);
 		Ball[i].setPosition(Position[i].x - Radius, Position[i].y - Radius);
 	}
 
@@ -96,7 +104,7 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 
 	while (pWindow->isOpen())
 	{
-		pWindow->clear(sf::Color::Black);
+		pWindow->clear(BackgroundColor);
 
 		ActualTimeDelta = Clock.restart();
 		IntegerTimeDelta = ActualTimeDelta.asMilliseconds();
