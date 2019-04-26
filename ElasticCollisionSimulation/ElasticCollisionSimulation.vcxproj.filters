@@ -18,12 +18,9 @@
     <ClCompile Include="source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\file_handling.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\file_handling.hpp">
+    <ClInclude Include="config_file_handling.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
