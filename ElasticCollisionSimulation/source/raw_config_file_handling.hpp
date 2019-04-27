@@ -25,8 +25,10 @@ private:
 protected:
 	vector<ConfigDataStruct> ConfigData;
 
-	void readFile() {
+	bool readFile() {
+		bool SuccessfulReadingRaw = false;
 		ifstream myfile(FilePath);
+
 		if (myfile.is_open())
 		{
 			constexpr char Char1 = '=';
@@ -75,17 +77,24 @@ protected:
 				}
 			}
 			myfile.close();
+			return SuccessfulReadingRaw = true;
+		}
+		else
+		{
+			return SuccessfulReadingRaw = false;
 		}
 	}
 
-	void writeFile() {
-
+	bool writeFile() {
+		bool SuccessfulWritingRaw = false;
+		//###########################
+		return SuccessfulWritingRaw = false;
 	}
 
 public:
-	RawConfigFileHandler() : FilePath("C:\\dev\\VS2019_repos\\ElasticCollisionSimulation\\bin\\Win32\\Release\\config.ini") {}
+	RawConfigFileHandler() : FilePath("config.ini") {}
 
-	void setFilePath(const string& pFilePath) {
+	void setFilePath(string pFilePath) {
 		FilePath = pFilePath;
 	}
 
