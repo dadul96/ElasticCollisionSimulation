@@ -64,7 +64,66 @@ private:
 	}
 
 	void checkConfig() {
-		//#################################
+		for (size_t i = 0; i < Configuration.BackgroundColorRGB.size(); i++)
+		{
+			if (Configuration.BackgroundColorRGB[i] < 0)
+			{
+				Configuration.BackgroundColorRGB[i] = 0;
+				ConfigManipulated = true;
+			}
+			else if (Configuration.BackgroundColorRGB[i] > 255)
+			{
+				Configuration.BackgroundColorRGB[i] = 255;
+				ConfigManipulated = true;
+			}
+		}
+
+		if (Configuration.BallCount < 1)
+		{
+			Configuration.BallCount = 1;
+			ConfigManipulated = true;
+		}
+		else if (Configuration.BallCount > 200)
+		{
+			Configuration.BallCount = 200;
+			ConfigManipulated = true;
+		}
+
+		if (Configuration.BallRadius < 1.f)
+		{
+			Configuration.BallRadius = 1.f;
+			ConfigManipulated = true;
+		}
+		else if (Configuration.BallRadius > 50.f)
+		{
+			Configuration.BallRadius = 50.f;
+			ConfigManipulated = true;
+		}
+
+		if (Configuration.AbsoluteVelocity < 0.01f)
+		{
+			Configuration.AbsoluteVelocity = 0.01f;
+			ConfigManipulated = true;
+		}
+		else if (Configuration.AbsoluteVelocity > 0.8f)
+		{
+			Configuration.AbsoluteVelocity = 0.8f;
+			ConfigManipulated = true;
+		}
+
+		for (size_t i = 0; i < Configuration.BallColorRGB.size(); i++)
+		{
+			if (Configuration.BallColorRGB[i] < 0)
+			{
+				Configuration.BallColorRGB[i] = 0;
+				ConfigManipulated = true;
+			}
+			else if (Configuration.BallColorRGB[i] > 255)
+			{
+				Configuration.BallColorRGB[i] = 255;
+				ConfigManipulated = true;
+			}
+		}
 	}
 
 public:
@@ -124,6 +183,7 @@ public:
 			if (DesiredParameterCount == ParameterCount)
 			{
 				SuccessfulReading = true;
+				checkConfig();
 			}
 			else
 			{

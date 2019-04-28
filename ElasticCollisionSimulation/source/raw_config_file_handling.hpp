@@ -151,6 +151,6 @@ public:
 			}
 			cout << endl << endl;
 		}
-			
+
 	}
 };

@@ -63,7 +63,7 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 	float Diameter = 2.f * Radius;
 	float AbsoluteVelocity = pConfigHandler.Configuration.AbsoluteVelocity;
 	unsigned int BallCount = pConfigHandler.Configuration.BallCount;
-	
+
 	float Angle = 0.f;
 	float AbsoluteDistance = 0.f;
 	float OverlappingDistance = 0.f;
