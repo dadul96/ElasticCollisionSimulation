@@ -22,7 +22,7 @@ int main() {
 	constexpr int WindowHeight = 500;
 
 	ConfigFileHandler ConfigHandler;
-	ConfigHandler.setFilePath("C:\\dev\\VS2019_repos\\ElasticCollisionSimulation\\bin\\Win32\\Release\\config1.ini");
+	ConfigHandler.setFilePath("config.ini");
 	ConfigHandler.getConfig();
 
 	sf::ContextSettings Settings;

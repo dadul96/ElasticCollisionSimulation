@@ -8,6 +8,7 @@ using std::cout;
 using std::cin;
 using std::string;
 using std::ifstream;
+using std::ofstream;
 using std::vector;
 
 
@@ -27,9 +28,9 @@ protected:
 
 	bool readFile() {
 		bool SuccessfulReadingRaw = false;
-		ifstream myfile(FilePath);
+		ifstream inFile(FilePath);
 
-		if (myfile.is_open())
+		if (inFile.is_open())
 		{
 			constexpr char Char1 = '=';
 			constexpr char Char2 = ',';
@@ -38,7 +39,7 @@ protected:
 			string Section;
 			int i = 0;
 
-			while (getline(myfile, Input))
+			while (getline(inFile, Input))
 			{
 				int Char1Pos = -1;
 				int Char2Pos = -1;
@@ -76,19 +77,52 @@ protected:
 					Section.erase(0, 1);
 				}
 			}
-			myfile.close();
-			return SuccessfulReadingRaw = true;
+			inFile.close();
+			return (SuccessfulReadingRaw = true);
 		}
 		else
 		{
-			return SuccessfulReadingRaw = false;
+			return (SuccessfulReadingRaw = false);
 		}
 	}
 
 	bool writeFile() {
 		bool SuccessfulWritingRaw = false;
-		//###########################
-		return SuccessfulWritingRaw = false;
+		ofstream outFile(FilePath);
+		if (outFile.is_open())
+		{
+			for (size_t i = 0; i < ConfigData.size(); i++)
+			{
+				if (i == 0)
+				{
+					outFile << "[" << ConfigData[i].Section << "]" << "\n";
+				}
+				else if (ConfigData[i].Section != ConfigData[(i - 1)].Section)
+				{
+					outFile << "\n";
+					outFile << "[" << ConfigData[i].Section << "]" << "\n";
+				}
+				outFile << ConfigData[i].Key << "=";
+				for (size_t j = 0; j < ConfigData[i].Value.size(); j++)
+				{
+					if (j == 0)
+					{
+						outFile << ConfigData[i].Value[j];
+					}
+					else
+					{
+						outFile << "," << ConfigData[i].Value[j];
+					}
+				}
+				outFile << "\n";
+			}
+			outFile.close();
+			return (SuccessfulWritingRaw = true);
+		}
+		else
+		{
+			return (SuccessfulWritingRaw = false);
+		}
 	}
 
 public:
