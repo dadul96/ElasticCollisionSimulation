@@ -4,7 +4,7 @@ Description: This program simulates elastic collisions of balls in a boxed area.
 Author: Daniel Duller
 Version: 0.2.0
 Creation date: 14.04.2019
-Last change: 26.04.2019
+Last change: 28.04.2019
 */
 
 #include <SFML/Graphics.hpp>
@@ -22,7 +22,7 @@ int main() {
 	constexpr int WindowHeight = 500;
 
 	ConfigFileHandler ConfigHandler;
-	ConfigHandler.setFilePath("config.ini");
+	ConfigHandler.setFilePath("config.ini"); //the file path is set to the .exe path (Exception: when running in Visual Studio the config.ini is not in the same folder as the .exe)
 	ConfigHandler.getConfig();
 
 	sf::ContextSettings Settings;
@@ -64,14 +64,14 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 	float AbsoluteVelocity = pConfigHandler.Configuration.AbsoluteVelocity;
 	unsigned int BallCount = pConfigHandler.Configuration.BallCount;
 
-	float Angle = 0.f;
+	float Angle = 0.f; //starting angle for the ball movement
 	float AbsoluteDistance = 0.f;
 	float OverlappingDistance = 0.f;
 
 	sf::Color BackgroundColor(pConfigHandler.Configuration.BackgroundColorRGB[0], pConfigHandler.Configuration.BackgroundColorRGB[1], pConfigHandler.Configuration.BackgroundColorRGB[2]);
 	sf::Color BallColor(pConfigHandler.Configuration.BallColorRGB[0], pConfigHandler.Configuration.BallColorRGB[1], pConfigHandler.Configuration.BallColorRGB[2]);
 
-	sf::Vector2f TemplateVector2f;
+	const sf::Vector2f TemplateVector2f; //used as data template for pushing back in vector array
 	vector<sf::Vector2f> Position;
 	vector<sf::Vector2f> Velocity;
 
@@ -82,11 +82,12 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 	sf::Time ActualTimeDelta;
 	sf::Int32 IntegerTimeDelta;
 
-	sf::CircleShape TemplateCircleShape;
+	const sf::CircleShape TemplateCircleShape; //used as data template for pushing back in vector array
 	vector<sf::CircleShape> Ball;
 
 	srand(static_cast<unsigned int>(time(NULL)));
 
+	//generating the balls, their random positions and their random moving directions:
 	for (size_t i = 0; i < BallCount; i++)
 	{
 		Position.push_back(TemplateVector2f);
@@ -125,25 +126,30 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 				UnitVectorDeltaPosition.x = DeltaPosition.x / AbsoluteDistance;
 				UnitVectorDeltaPosition.y = DeltaPosition.y / AbsoluteDistance;
 
+				//handling of ball collisions:
 				if (AbsoluteDistance < Diameter)
 				{
+					//calculation of new velocities:
 					Velocity[j] -= (2 * BallMass / (BallMass + BallMass)) * (((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
 					DeltaPosition = (-DeltaPosition);
 					DeltaVelocity = (-DeltaVelocity);
 					Velocity[i] -= (2 * BallMass / (BallMass + BallMass)) * (((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
 
+					//calculation of new positions:
 					Position[j].x += (Velocity[j].x * IntegerTimeDelta);
-					Position[j].x += (Velocity[j].y * IntegerTimeDelta);
+					Position[j].y += (Velocity[j].y * IntegerTimeDelta);
 					Position[i].x += (Velocity[i].x * IntegerTimeDelta);
-					Position[i].x += (Velocity[i].y * IntegerTimeDelta);
+					Position[i].y += (Velocity[i].y * IntegerTimeDelta);
 
 					OverlappingDistance = Diameter - AbsoluteDistance;
 
+					//setting the new ball position (and separating balls that overlap):
 					Ball[j].setPosition((Position[j].x += (OverlappingDistance * UnitVectorDeltaPosition.x)), (Position[j].y += OverlappingDistance * UnitVectorDeltaPosition.y));
 					Ball[i].setPosition((Position[i].x -= (OverlappingDistance * UnitVectorDeltaPosition.x)), (Position[i].y -= OverlappingDistance * UnitVectorDeltaPosition.y));
 				}
 			}
 
+			//handling of wall collisions (ball positions gets set inside the walls; velocity gets redirected):
 			if (Position[i].x < LeftBorder)
 			{
 				Ball[i].setPosition((Position[i].x = LeftBorder), Position[i].y);
@@ -165,6 +171,7 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 				Velocity[i].y *= -1.f;
 			}
 
+			//setting the new ball position (when no collision is happening):
 			Ball[i].setPosition((Position[i].x += (Velocity[i].x * IntegerTimeDelta)), (Position[i].y += (Velocity[i].y * IntegerTimeDelta)));
 			pWindow->draw(Ball[i]);
 		}

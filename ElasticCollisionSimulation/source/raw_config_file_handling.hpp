@@ -24,7 +24,7 @@ private:
 	string FilePath;
 
 protected:
-	vector<ConfigDataStruct> ConfigData;
+	vector<ConfigDataStruct> RawConfigData;
 
 	bool readFile() {
 		bool SuccessfulReadingRaw = false;
@@ -62,10 +62,10 @@ protected:
 					{
 						Value.push_back(RawValue);
 					}
-					ConfigData.push_back(ConfigDataStruct());
-					ConfigData[i].Section = Section;
-					ConfigData[i].Key = Key;
-					ConfigData[i].Value = Value;
+					RawConfigData.push_back(ConfigDataStruct());
+					RawConfigData[i].Section = Section;
+					RawConfigData[i].Key = Key;
+					RawConfigData[i].Value = Value;
 
 					i++;
 				}
@@ -91,27 +91,27 @@ protected:
 		ofstream outFile(FilePath);
 		if (outFile.is_open())
 		{
-			for (size_t i = 0; i < ConfigData.size(); i++)
+			for (size_t i = 0; i < RawConfigData.size(); i++)
 			{
 				if (i == 0)
 				{
-					outFile << "[" << ConfigData[i].Section << "]" << "\n";
+					outFile << "[" << RawConfigData[i].Section << "]" << "\n";
 				}
-				else if (ConfigData[i].Section != ConfigData[(i - 1)].Section)
+				else if (RawConfigData[i].Section != RawConfigData[(i - 1)].Section)
 				{
 					outFile << "\n";
-					outFile << "[" << ConfigData[i].Section << "]" << "\n";
+					outFile << "[" << RawConfigData[i].Section << "]" << "\n";
 				}
-				outFile << ConfigData[i].Key << "=";
-				for (size_t j = 0; j < ConfigData[i].Value.size(); j++)
+				outFile << RawConfigData[i].Key << "=";
+				for (size_t j = 0; j < RawConfigData[i].Value.size(); j++)
 				{
 					if (j == 0)
 					{
-						outFile << ConfigData[i].Value[j];
+						outFile << RawConfigData[i].Value[j];
 					}
 					else
 					{
-						outFile << "," << ConfigData[i].Value[j];
+						outFile << "," << RawConfigData[i].Value[j];
 					}
 				}
 				outFile << "\n";
@@ -136,18 +136,18 @@ public:
 		return FilePath;
 	}
 
-	void printConfigData() {
-		for (size_t i = 0; i < ConfigData.size(); i++)
+	void printRawConfigData() {
+		for (size_t i = 0; i < RawConfigData.size(); i++)
 		{
-			cout << "[" << ConfigData[i].Section << "]" << endl;
-			cout << ConfigData[i].Key << "=";
-			for (size_t j = 0; j < ConfigData[i].Value.size(); j++)
+			cout << "[" << RawConfigData[i].Section << "]" << endl;
+			cout << RawConfigData[i].Key << "=";
+			for (size_t j = 0; j < RawConfigData[i].Value.size(); j++)
 			{
 				if (j > 0)
 				{
 					cout << ",";
 				}
-				cout << ConfigData[i].Value[j];
+				cout << RawConfigData[i].Value[j];
 			}
 			cout << endl << endl;
 		}
