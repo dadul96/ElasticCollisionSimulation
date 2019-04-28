@@ -12,13 +12,18 @@ Last change: 26.04.2019
 #include <cstdlib>
 #include <cmath>
 #include <thread>
+#include "config_file_handling.hpp"
 
 
-void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT);
+void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT, const ConfigFileHandler& pConfigHandler);
 
 int main() {
 	constexpr int WindowWidth = 500;
 	constexpr int WindowHeight = 500;
+
+	ConfigFileHandler ConfigHandler;
+	ConfigHandler.setFilePath("config.ini");
+	ConfigHandler.getConfig();
 
 	sf::ContextSettings Settings;
 	Settings.antialiasingLevel = 4;
@@ -26,7 +31,7 @@ int main() {
 	sf::RenderWindow Window(sf::VideoMode(WindowWidth, WindowHeight), "Elastic Collision Simulation", sf::Style::Close, Settings);
 	Window.setActive(false);
 
-	std::thread renderingThread(&rendering, &Window, WindowWidth, WindowHeight);
+	std::thread renderingThread(&rendering, &Window, WindowWidth, WindowHeight, ConfigHandler);
 
 	while (Window.isOpen())
 	{
@@ -43,27 +48,32 @@ int main() {
 	return 0;
 }
 
-void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT) {
+void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& pWINDOW_HEIGHT, const ConfigFileHandler& pConfigHandler) {
 	pWindow->setActive(true);
 	pWindow->setVerticalSyncEnabled(true);
 
-	const float PI = 3.1415f;
-	const float BottomBorder = float(pWINDOW_HEIGHT);
-	const float TopBorder = 0.f;
-	const float LeftBorder = 0.f;
-	const float RightBorder = float(pWINDOW_WIDTH);
-	const float Radius = 15.f;
-	const float Diameter = 2.f * Radius;
-	const float AbsoluteVelocity = .1f;
-	const int BallCount = 15;
-	const int BallMass = 1;
+	constexpr float PI = 3.1415f;
+	const float BottomBorder = static_cast<float>(pWINDOW_HEIGHT);
+	constexpr float TopBorder = 0.f;
+	constexpr float LeftBorder = 0.f;
+	const float RightBorder = static_cast<float>(pWINDOW_WIDTH);
+	const unsigned int BallMass = 1;
+
+	float Radius = pConfigHandler.Configuration.BallRadius;
+	float Diameter = 2.f * Radius;
+	float AbsoluteVelocity = pConfigHandler.Configuration.AbsoluteVelocity;
+	unsigned int BallCount = pConfigHandler.Configuration.BallCount;
 
 	float Angle = 0.f;
 	float AbsoluteDistance = 0.f;
 	float OverlappingDistance = 0.f;
 
-	sf::Vector2f Position[BallCount];
-	sf::Vector2f Velocity[BallCount];
+	sf::Color BackgroundColor(pConfigHandler.Configuration.BackgroundColorRGB[0], pConfigHandler.Configuration.BackgroundColorRGB[1], pConfigHandler.Configuration.BackgroundColorRGB[2]);
+	sf::Color BallColor(pConfigHandler.Configuration.BallColorRGB[0], pConfigHandler.Configuration.BallColorRGB[1], pConfigHandler.Configuration.BallColorRGB[2]);
+
+	sf::Vector2f TemplateVector2f;
+	vector<sf::Vector2f> Position;
+	vector<sf::Vector2f> Velocity;
 
 	sf::Vector2f DeltaPosition;
 	sf::Vector2f UnitVectorDeltaPosition;
@@ -72,23 +82,27 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 	sf::Time ActualTimeDelta;
 	sf::Int32 IntegerTimeDelta;
 
-	sf::CircleShape Ball[BallCount];
+	sf::CircleShape TemplateCircleShape;
+	vector<sf::CircleShape> Ball;
 
 	srand(static_cast<unsigned int>(time(NULL)));
 
 	for (size_t i = 0; i < BallCount; i++)
 	{
+		Position.push_back(TemplateVector2f);
 		Position[i].x = static_cast<float>(rand() % 400 + 50);
 		Position[i].y = static_cast<float>(rand() % 400 + 50);
 
 		Angle = static_cast<float>(rand() % 360);
 		Angle = (Angle * PI) / 180.f;
 
+		Velocity.push_back(TemplateVector2f);
 		Velocity[i].x = AbsoluteVelocity * cosf(Angle);
 		Velocity[i].y = AbsoluteVelocity * sinf(Angle);
 
+		Ball.push_back(TemplateCircleShape);
 		Ball[i].setRadius(Radius);
-		Ball[i].setFillColor(sf::Color::Green);
+		Ball[i].setFillColor(BallColor);
 		Ball[i].setPosition(Position[i].x - Radius, Position[i].y - Radius);
 	}
 
@@ -96,7 +110,7 @@ void rendering(sf::RenderWindow* pWindow, const int& pWINDOW_WIDTH, const int& p
 
 	while (pWindow->isOpen())
 	{
-		pWindow->clear(sf::Color::Black);
+		pWindow->clear(BackgroundColor);
 
 		ActualTimeDelta = Clock.restart();
 		IntegerTimeDelta = ActualTimeDelta.asMilliseconds();

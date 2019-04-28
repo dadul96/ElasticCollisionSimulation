@@ -20,7 +20,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config_file_handling.hpp">
+    <ClInclude Include="source\raw_config_file_handling.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\config_file_handling.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
