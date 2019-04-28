@@ -9,6 +9,9 @@ There is no installation required. Just download the **ElasticCollisionSimulatio
 * [Visual Studio 2019](https://visualstudio.microsoft.com/) - IDE used for programming
 * [SFML](https://www.sfml-dev.org/) - Library used for creating the GUI
 
+### Note
+The SFML-Library was build for Visual Studio 2019 and 32bit target systems. If you are using other versions of VS you might need to change the library in the dependencies-folder.
+
 ### Author
 **Daniel Duller** - [dadul96](https://github.com/dadul96)
 
