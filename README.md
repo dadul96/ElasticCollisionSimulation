@@ -4,7 +4,7 @@ This program simulates elastic collisions of balls in a boxed area. For more inf
 
 ### Installation
 There is no installation required. Just download the **ElasticCollisionSimulation.exe** (from [Releases](https://github.com/dadul96/ElasticCollisionSimulation/releases)) and run the simulation. When executing the program for the first time,
-a **config.ini** file will be created in the same folder. At the next program start the config settings are loaded from this file. The config file allows following settings:
+a **config.ini** file will be created in the same folder. At the next program start, the config settings are loaded from this file. The config file allows the following settings:
 * Background color
 * Ball count
 * Ball radius
@@ -16,13 +16,13 @@ a **config.ini** file will be created in the same folder. At the next program st
 * [SFML](https://www.sfml-dev.org/) - Library used for creating the GUI
 
 ### Note
-The SFML-Library was build for Visual Studio 2019 and 32bit target systems. If you are using other versions of VS you might need to change the library in the dependencies-folder.
+The SFML-Library was built for Visual Studio 2019 and 32bit target systems. If you are using other versions of VS you might need to change the library in the dependencies-folder.
 
 ### Author
 **Daniel Duller** - [dadul96](https://github.com/dadul96)
 
 ### License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ### Acknowledgments
 * Inspired by **Oscar Villarreal** - [oscardve](https://github.com/oscardve)
